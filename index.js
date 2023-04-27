@@ -1,5 +1,9 @@
 import puppeteer from "puppeteer";
 
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
 const getQuotes = async () => {
 	const browser = await puppeteer.launch({
 		headless: false,
@@ -14,7 +18,6 @@ const getQuotes = async () => {
 
 	let existeProximaPagina = true;
 	let quotes = [];
-	let id = 0;
 
 	while (existeProximaPagina) {
 		const quoteList = await page.$$(".quote");
@@ -23,7 +26,6 @@ const getQuotes = async () => {
 			...quotes,
 			...(await Promise.all(
 				quoteList.map(async (quote) => {
-					id++;
 					const text = await quote.$eval(
 						".text",
 						(el) => el.innerText
@@ -35,11 +37,17 @@ const getQuotes = async () => {
 					const tags = await quote.$$eval(".tags .tag", (tags) =>
 						tags.map((tag) => tag.innerText)
 					);
-					const numeroAleatorio = Math.floor(Math.random() * 1000)
-						.toString()
-						.padStart(3, "0");
-					const quoteId = `${numeroAleatorio}-${id}`;
-					return { id: quoteId, text, author, tags };
+
+					const quoteData = {
+						text,
+						author,
+						tags,
+					};
+					const createdQuote = await prisma.quote.create({
+						data: quoteData,
+					});
+
+					return { ...quoteData, id: createdQuote.id };
 				})
 			)),
 		];
@@ -56,6 +64,7 @@ const getQuotes = async () => {
 	console.log(quotes);
 
 	await browser.close();
+	await prisma.$disconnect();
 };
 
 getQuotes();

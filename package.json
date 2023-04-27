@@ -12,6 +12,10 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@prisma/client": "^4.13.0",
 		"puppeteer": "^19.11.1"
+	},
+	"devDependencies": {
+		"prisma": "^4.13.0"
 	}
 }
