@@ -38,6 +38,17 @@ const getQuotes = async () => {
 						tags.map((tag) => tag.innerText)
 					);
 
+					const existingQuote = await prisma.quote.findFirst({
+						where: {
+							text: text,
+							author: author,
+						},
+					});
+
+					if (existingQuote) {
+						return { ...existingQuote, tags };
+					}
+
 					const quoteData = {
 						text,
 						author,
