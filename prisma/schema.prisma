@@ -13,3 +13,14 @@ model Quote {
   author String
   tags   String[]
 }
+model Cripto {
+  id     Int @id @default(autoincrement())
+  nome String
+	marketPrice String
+	alterar String
+	porcentagemAlteracao String
+	capitalizacaoDeMercado String
+	volumeEmMoedaDesdeMeiaNoite String
+	volumeEmMoeda24Horas String
+	dinheiroCirculante String
+}
